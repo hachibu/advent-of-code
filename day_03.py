@@ -64,10 +64,11 @@ def parse_program(lines):
 
 def main():
     input_text = parse_input_text("input/day_03.txt")
+    program = parse_program(input_text)
 
     ans = 0
 
-    for stmt in parse_program(input_text):
+    for stmt in program:
         match stmt:
             case [("operator", "mul", f), ("num", a), ("num", b)]:
                 ans += f(a, b)
@@ -77,7 +78,7 @@ def main():
     ans = 0
     mul_enabled = True
 
-    for stmt in parse_program(input_text):
+    for stmt in program:
         match stmt:
             case [("id", "do")]:
                 mul_enabled = True
