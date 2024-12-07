@@ -1,5 +1,6 @@
 from collections import deque
 from re import Scanner
+import operator
 
 
 def parse_input_text(file):
@@ -29,9 +30,14 @@ def tokenize(line):
 def lex(tokens):
     stmts = []
     for i in range(len(tokens)):
+        expr = None
         match tokens[i:]:
+            case [("id", "do"), ("lparen", _), ("rparen", _), *_]:
+                expr = [("id", "do")]
+            case [("id", "don't"), ("lparen", _), ("rparen", _), *_]:
+                expr = [("id", "don't")]
             case [
-                ("id", id),
+                ("id", "mul"),
                 ("lparen", _),
                 ("num", a),
                 ("comma", _),
@@ -40,31 +46,48 @@ def lex(tokens):
                 *_,
             ]:
                 expr = [
-                    ("id", id),
+                    ("operator", "mul", operator.mul),
                     ("num", a),
                     ("num", b),
                 ]
-                stmts.append(expr)
+        if expr:
+            stmts.append(expr)
     return stmts
 
 
 def parse_program(lines):
-    program = []
+    programs = []
     for line in lines:
-        program.extend(lex(tokenize(line)))
-    return program
+        programs.extend(lex(tokenize(line)))
+    return programs
 
 
 def main():
     input_text = parse_input_text("input/day_03.txt")
+
     ans = 0
 
     for stmt in parse_program(input_text):
         match stmt:
-            case [("id", "mul"), ("num", a), ("num", b)]:
-                ans += a * b
+            case [("operator", "mul", f), ("num", a), ("num", b)]:
+                ans += f(a, b)
 
     assert ans == 192767529
+
+    ans = 0
+    mul_enabled = True
+
+    for stmt in parse_program(input_text):
+        match stmt:
+            case [("id", "do")]:
+                mul_enabled = True
+            case [("id", "don't")]:
+                mul_enabled = False
+            case [("operator", "mul", f), ("num", a), ("num", b)]:
+                if mul_enabled:
+                    ans += f(a, b)
+
+    assert ans == 104083373
 
 
 if __name__ == "__main__":
