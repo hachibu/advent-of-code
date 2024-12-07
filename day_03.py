@@ -13,7 +13,7 @@ def tokenize(line):
     scanner = Scanner(
         [
             (r"[0-9]+", lambda _, t: ("num", int(t))),
-            (r"[a-z]+", lambda _, t: ("id", t)),
+            (r"[a-z]+'*[a-z]*", lambda _, t: ("id", t)),
             (r"[(]", lambda _, t: ("lparen", t)),
             (r"[)]", lambda _, t: ("rparen", t)),
             (r"[,]", lambda _, t: ("comma", t)),
@@ -29,10 +29,22 @@ def tokenize(line):
 def lex(tokens):
     stmts = []
     for i in range(len(tokens)):
-        stmt = [t[0] for t in tokens[i : i + 6]]
-        match stmt:
-            case ["id", "lparen", "num", "comma", "num", "rparen"]:
-                stmts.append([tokens[i], tokens[i + 2], tokens[i + 4]])
+        match tokens[i:]:
+            case [
+                ("id", id),
+                ("lparen", _),
+                ("num", a),
+                ("comma", _),
+                ("num", b),
+                ("rparen", _),
+                *_,
+            ]:
+                expr = [
+                    ("id", id),
+                    ("num", a),
+                    ("num", b),
+                ]
+                stmts.append(expr)
     return stmts
 
 
