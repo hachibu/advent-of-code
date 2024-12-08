@@ -44,6 +44,22 @@ def diags(a):
             yield ys[j:]
 
 
+def submatricies(a, size):
+    h, w = a.shape
+    for i in range(h):
+        for j in range(w):
+            yield a[i : i + size, j : j + size]
+
+
+def contains_mas(a):
+    match list(a):
+        case ["M", "A", "S"]:
+            return True
+        case ["S", "A", "M"]:
+            return True
+    return False
+
+
 def main():
     a = parse_input_text("input/day_04.txt")
 
@@ -53,6 +69,14 @@ def main():
         ans += count_xmas(arr)
 
     assert ans == 2557
+
+    ans = 0
+
+    for m in submatricies(a, 3):
+        if contains_mas(m.diagonal()) and contains_mas(np.fliplr(m).diagonal()):
+            ans += 1
+
+    assert ans == 1854
 
 
 if __name__ == "__main__":
