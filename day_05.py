@@ -2,23 +2,25 @@ from collections import Counter
 from itertools import combinations
 
 
-def parse_input_text(file):
+def parse_updates_and_rules(file):
     updates = []
     rules = set()
 
     with open(file) as f:
         for line in f.read().splitlines():
             if line.find("|") > -1:
-                rule = tuple(map(int, line.split("|")))
-                rules.add(rule)
+                rules.add(tuple(int_split(line, "|")))
             elif line.find(",") > -1:
-                update = list(map(int, line.split(",")))
-                updates.append(update)
+                updates.append(int_split(line, ","))
 
     return (updates, rules)
 
 
-def is_update_valid(update, rules):
+def int_split(line, sep):
+    return [int(n) for n in line.split(sep)]
+
+
+def is_update_valid(update, rules) -> bool:
     for a, b in rules:
         if a not in update or b not in update:
             continue
@@ -29,7 +31,7 @@ def is_update_valid(update, rules):
 
 
 def main():
-    updates, rules = parse_input_text("input/day_05.txt")
+    updates, rules = parse_updates_and_rules("input/day_05.txt")
     ans = 0
     invalid_updates = []
 

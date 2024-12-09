@@ -3,11 +3,18 @@ from re import Scanner
 import operator
 
 
-def parse_input_text(file):
+def parse_memory(file):
     memory = []
     with open(file) as f:
         memory.extend(f.read().splitlines())
     return memory
+
+
+def parse_program(lines):
+    programs = []
+    for line in lines:
+        programs.extend(lex(tokenize(line)))
+    return programs
 
 
 def tokenize(line):
@@ -55,38 +62,34 @@ def lex(tokens):
     return stmts
 
 
-def parse_program(lines):
-    programs = []
-    for line in lines:
-        programs.extend(lex(tokenize(line)))
-    return programs
-
-
-def main():
-    input_text = parse_input_text("input/day_03.txt")
-    program = parse_program(input_text)
-
-    ans = 0
-
-    for stmt in program:
-        match stmt:
-            case [("operator", "mul", f), ("num", a), ("num", b)]:
-                ans += f(a, b)
-
-    assert ans == 192767529
-
+def eval(program, version):
     ans = 0
     mul_enabled = True
 
     for stmt in program:
         match stmt:
             case [("id", "do")]:
-                mul_enabled = True
+                if version > 1:
+                    mul_enabled = True
             case [("id", "don't")]:
-                mul_enabled = False
+                if version > 1:
+                    mul_enabled = False
             case [("operator", "mul", f), ("num", a), ("num", b)]:
-                if mul_enabled:
+                if version == 1 or mul_enabled:
                     ans += f(a, b)
+
+    return ans
+
+
+def main():
+    memory = parse_memory("input/day_03.txt")
+    program = parse_program(memory)
+
+    ans = eval(program, 1)
+
+    assert ans == 192767529
+
+    ans = eval(program, 2)
 
     assert ans == 104083373
 
