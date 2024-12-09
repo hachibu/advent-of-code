@@ -85,11 +85,11 @@ def main():
     memory = parse_memory("input/day_03.txt")
     program = parse_program(memory)
 
-    ans = eval(program, 1)
+    ans = eval(program, version=1)
 
     assert ans == 192767529
 
-    ans = eval(program, 2)
+    ans = eval(program, version=2)
 
     assert ans == 104083373
 

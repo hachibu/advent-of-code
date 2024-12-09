@@ -1,5 +1,6 @@
 from collections import Counter
 from itertools import combinations
+from aoc import int_split
 
 
 def parse_updates_and_rules(file):
@@ -14,10 +15,6 @@ def parse_updates_and_rules(file):
                 updates.append(int_split(line, ","))
 
     return (updates, rules)
-
-
-def int_split(line, sep):
-    return [int(n) for n in line.split(sep)]
 
 
 def is_update_valid(update, rules) -> bool:

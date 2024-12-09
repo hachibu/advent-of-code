@@ -1,13 +1,13 @@
 from collections import Counter
 from itertools import pairwise, combinations
+from aoc import int_split
 
 
 def parse_reports(file):
     reports = []
     with open(file) as f:
         for line in f.read().splitlines():
-            report = [int(level) for level in line.split()]
-            reports.append(report)
+            reports.append(int_split(line))
     return reports
 
 

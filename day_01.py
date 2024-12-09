@@ -1,11 +1,12 @@
 from collections import Counter
+from aoc import int_split
 
 
 def parse_cols(file):
     cols = [[], []]
     with open(file) as f:
         for line in f.read().splitlines():
-            id_1, id_2 = map(int, line.split())
+            id_1, id_2 = int_split(line)
             cols[0].append(id_1)
             cols[1].append(id_2)
     return cols
