@@ -1,6 +1,9 @@
 from aoc import int_split, interleave
 from itertools import combinations_with_replacement, permutations
 from operator import add, mul
+from collections import Counter, deque
+from functools import cache
+import time
 
 
 def parse_equations(file):
@@ -14,50 +17,59 @@ def parse_equations(file):
     return equations
 
 
-def enumerate_operator_combinations(nums):
+def cat(a, b):
+    return int(str(a) + str(b))
+
+
+@cache
+def enumerate_solutions(n):
     operators = set()
-    for c in combinations_with_replacement([add, mul], len(nums) - 1):
+
+    for c in combinations_with_replacement([add, mul, cat], n):
         for p in permutations(c):
             operators.add(p)
+
     return operators
 
 
 def main():
     equations = parse_equations("input/day_07.txt")
 
-    total_calibration_result = 0
+    total = 0
 
     for target, nums in equations:
         solution_found = False
-        operator_combinations = enumerate_operator_combinations(nums)
 
-        for oc in operator_combinations:
-            equation = interleave(nums, oc)
-            stack = []
+        for solution in enumerate_solutions(len(nums) - 1):
+            queue = deque(interleave(nums, solution))
+            solution_too_big = False
 
-            for x in equation:
-                if len(stack) == 3:
-                    b = stack.pop()
-                    o = stack.pop()
-                    a = stack.pop()
-                    v = o(a, b)
+            while queue:
+                if len(queue) >= 3:
+                    n = queue.popleft()
+                    f = queue.popleft()
+                    m = queue.popleft()
+                    v = f(n, m)
                     if v > target:
+                        solution_too_big = True
                         break
-                    stack.append(v)
-                stack.append(x)
+                    queue.appendleft(v)
+                else:
+                    n = queue.popleft()
+                    if n == target:
+                        solution_found = True
+                        break
 
-            if len(stack) == 3:
-                a, o, b = stack
-                v = o(a, b)
-                if v == target:
-                    solution_found = True
-                    break
+            if solution_too_big:
+                continue
+
+            if solution_found:
+                break
 
         if solution_found:
-            total_calibration_result += target
+            total += target
 
-    assert total_calibration_result == 3749
-    print(total_calibration_result)
+    assert total == 227615740238334
 
 
 if __name__ == "__main__":
